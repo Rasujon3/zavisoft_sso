@@ -41,4 +41,35 @@ class SSOController extends Controller
 
         return redirect()->route('dashboard');
     }
+    public function handleSSOLogout(Request $request)
+    {
+        $payload   = $request->input('payload');
+        $signature = $request->input('signature');
+
+        // Signature verify
+        $expectedSignature = hash_hmac('sha256', $payload, env('SSO_SECRET'));
+
+        if (!hash_equals($expectedSignature, $signature)) {
+            return response()->json(['message' => 'Invalid signature'], 403);
+        }
+
+        $data = json_decode(base64_decode($payload), true);
+
+        // Token expire check
+        if (now()->timestamp - $data['timestamp'] > 300) {
+            return response()->json(['message' => 'Token expired'], 403);
+        }
+
+        // search user against email & logout all session
+        $user = User::where('email', $data['email'])->first();
+
+        if ($user) {
+            // session delete
+            \DB::table('sessions')
+                ->where('user_id', $user->id)
+                ->delete();
+        }
+
+        return response()->json(['message' => 'Logged out successfully']);
+    }
 }

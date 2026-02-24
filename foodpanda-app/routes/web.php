@@ -21,3 +21,4 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard')->middleware('auth');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/sso/login', [SSOController::class, 'handleSSO'])->name('sso.login');
+Route::post('/sso/logout', [SSOController::class, 'handleSSOLogout'])->name('sso.logout');

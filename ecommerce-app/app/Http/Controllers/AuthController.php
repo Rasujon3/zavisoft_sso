@@ -8,6 +8,10 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
         return view('auth.login');
     }
 
@@ -33,8 +37,34 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        $user = Auth::user();
+
+        //  notify -> Foodpanda
+        $this->notifyFoodpandaLogout($user->email);
+
+        //  Self logout
         Auth::logout();
         $request->session()->invalidate();
+//        $request->session()->regenerateToken();
+
         return redirect()->route('login');
+    }
+    private function notifyFoodpandaLogout(string $email): void
+    {
+        $payload = base64_encode(json_encode([
+            'email'     => $email,
+            'timestamp' => now()->timestamp,
+        ]));
+
+        $signature = hash_hmac('sha256', $payload, env('SSO_SECRET'));
+
+        try {
+            \Http::timeout(5)->post(env('FOODPANDA_URL') . '/sso/logout', [
+                'payload'   => $payload,
+                'signature' => $signature,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('SSO Logout failed: ' . $e->getMessage());
+        }
     }
 }

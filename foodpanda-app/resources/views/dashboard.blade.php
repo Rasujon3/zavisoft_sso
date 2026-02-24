@@ -12,12 +12,17 @@
 
     <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-md-8 text-center">
-                <div class="card shadow p-4">
+            <div class="col-md-8 text-center bg-danger">
+                <div class="card shadow p-4 bg-warning">
                     <h3>Welcome to Foodpanda ! 🍔</h3>
                     <p class="text-muted">You are logged in as <strong>{{ auth()->user()->email }}</strong></p>
                     <hr>
-                    <p>Click below to go to <strong>Foodpanda</strong> without logging in again:</p>
+                    <p>Click below to go to
+                        <strong>
+                            <a href="{{ env('ECOMMERCE_URL') }}" target="_blank">Ecommerce Dashboard</a>
+                        </strong>
+                        without logging in again:
+                    </p>
 
                 </div>
             </div>
