@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SSOController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +23,12 @@ Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard'
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/sso/login', [SSOController::class, 'handleSSO'])->name('sso.login');
 Route::post('/sso/logout', [SSOController::class, 'handleSSOLogout'])->name('sso.logout');
+
+Route::get('/clear-cache', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+
+    return 'All caches (config, route, view, application) have been cleared!';
+});

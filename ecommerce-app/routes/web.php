@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SSOController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +22,12 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard')->middleware('auth');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/sso/redirect', [SSOController::class, 'redirectToFoodpanda'])->name('sso.redirect')->middleware('auth');
+
+Route::get('/clear-cache', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+
+    return 'All caches (config, route, view, application) have been cleared!';
+});
